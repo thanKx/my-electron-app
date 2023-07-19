@@ -2,11 +2,12 @@
   "name": "vite-electron-vue3-ts",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "main": "electron/main.ts",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "electron ."
   },
   "dependencies": {
     "vue": "^3.3.4"
