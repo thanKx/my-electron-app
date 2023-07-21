@@ -12,7 +12,7 @@
     code-gen-form
   </h1>
   <h3>
-    代码生成表单
+    拒绝以后所有的简单的增删改查
   </h3>
 </template>
 <script setup lang="ts">
