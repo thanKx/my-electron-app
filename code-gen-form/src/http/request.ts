@@ -1,4 +1,5 @@
 import axios from "axios";
+import {ElMessage} from "element-plus";
 
 const serviceRequest  = axios.create({
     baseURL: 'http://localhost:8000',
@@ -25,9 +26,23 @@ serviceRequest.interceptors.request.use(
 serviceRequest.interceptors.response.use(
     function (response) {
         console.log("response interceptors fulfilled .... ")
-        return response;
+
+        // 未设置状态码则默认成功状态
+        const code = response.data.code || 200;
+
+        // 获取错误信息
+        const msg = response.data.msg
+
+        if ( code !== 200) {
+            ElMessage({ message : '😂, 请求失败了', type: "error"})
+            return Promise.reject(new Error(msg))
+        }
+
+        return response.data;
     },
     function (error) {
+        console.log("response interceptors error ......")
+        ElMessage.error("😂请求失败了 : " + error.message)
         return Promise.reject(error);
     }
 )
