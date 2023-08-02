@@ -38,13 +38,14 @@
 
 <script setup lang="ts">
 import {getTableList} from "../http/apis/form"
-import {ref} from "vue";
+import {provide, ref} from "vue";
 import Database from "./Database.vue";
 const tableData = ref([])
 const dialogVisible = ref(false)
+provide('getList', getList)
 
-function getList() {
-  getTableList().then(response => {
+function getList(id) {
+  getTableList(id).then(response => {
     tableData.value = response.data;
   })
 }
@@ -52,9 +53,6 @@ function getList() {
 function handleView(row) {
   dialogVisible.value = true
 }
-
-
-getList()
 
 </script>
 

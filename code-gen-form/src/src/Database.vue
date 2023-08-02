@@ -1,7 +1,7 @@
 <template>
   <el-row>
     <el-button type="success" icon="Plus" circle @click="handleAdd"/>
-    <el-button type="primary" icon="Edit" circle />
+    <el-button type="primary" icon="Edit" circle @click="handleEdit"/>
     <el-button type="danger" icon="Delete" circle />
   </el-row>
 
@@ -13,74 +13,110 @@
     </ul>
   </el-row>
 
-  <el-dialog v-model="dialogFormVisible" title="Shipping address">
-    <el-form :model="form" label-width="auto" :rules="rules">
+  <el-dialog v-model="dialogFormVisible" :title="title">
+    <el-form ref="formRef" :model="form" label-width="auto" :rules="rules">
       <el-form-item label="数据库名" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
-      <el-form-item label="主机名">
+      <el-form-item label="主机名" prop="host">
         <el-input v-model="form.host" />
       </el-form-item>
-      <el-form-item label="端口">
+      <el-form-item label="端口" prop="port">
         <el-input v-model="form.port" />
       </el-form-item>
-      <el-form-item label="库名">
-        <el-input v-model="form.name" />
+      <el-form-item label="库名" prop="schema">
+        <el-input v-model="form.schema" />
       </el-form-item>
-      <el-form-item label="用户名">
+      <el-form-item label="用户名" prop="user">
         <el-input v-model="form.user" />
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="密码" prop="pass">
         <el-input v-model="form.pass" />
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">
+        <el-button type="primary" @click="handleSubmit">
           确认
         </el-button>
+        <el-button @click="resetForm(formRef)">Reset</el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {inject, nextTick, onMounted, reactive, ref, toRefs} from "vue";
+import { add, getDataBase, getDatabaseList, update } from "../http/apis/form";
+import type { FormInstance } from "element-plus";
+import { ElMessage } from "element-plus";
+const getList = inject<(id) => void>('getList', () => {});
+const formRef = ref<FormInstance>()
 
-const databases =  ref([
-  {
-    id: 1,
-    name: '数据库1'
-  },
-  {
-    id: 2,
-    name: '数据库2'
-  },
-  {
-    id: 3,
-    name: '数据库3'
-  },
-])
-const activeId = ref(null);
-const form = reactive({
-  name: '',
-  host: '',
-  port:'',
-  schema: '',
-  user: '',
-  pass: ''
+const data = reactive({
+  form: {},
+  rules: {},
+  title: '',
+  dialogFormVisible: false,
+  databases: [],
+  activeId: null
 })
-const rules = reactive({
 
+const { form, rules, dialogFormVisible, databases, activeId, title} = toRefs(data)
+
+getDatabaseList().then(response => {
+  databases.value = response.data
+  // 默认选择第一个
+  if (databases.value.length > 0) {
+    activeId.value = response.data[0].id
+    getList(response.data[0].id)
+  }
 })
 function handleClick(id) {
-  activeId.value = id;
+  activeId.value = id
+  getList(id)
 }
 
-const dialogFormVisible = ref(false)
+/*新增数据库*/
 function handleAdd() {
   dialogFormVisible.value = true
+  title.value = "新增数据源"
+}
+
+const resetForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.resetFields()
+}
+
+/*修改数据库*/
+function handleEdit() {
+  if (!activeId.value) {
+    ElMessage.warning("💥请选择您要修改的数据库...")
+    return
+  }
+  title.value = "编辑数据源"
+  getDataBase(activeId.value).then( res => {
+    nextTick(() => {
+      dialogFormVisible.value = true
+      form.value = res.data
+    })
+  })
+}
+
+/*新增或修改*/
+function handleSubmit() {
+  if ( !form.value.id ) {
+    // 新增
+    add(form.value).then( res => {
+      ElMessage.success("😀新增成功")
+    })
+  } else {
+    // 修改
+    update(form.value).then( res => {
+      ElMessage.success("😀修改成功")
+    })
+  }
 }
 </script>
 
@@ -101,10 +137,12 @@ function handleAdd() {
     display: block; /* 将链接转换为块元素以占据整个列表项空间 */
     padding: 10px; /* 调整链接的内边距 */
     text-decoration: none; /* 移除链接的下划线 */
-    color: #333; /* 设置链接文本的颜色 */
-    background-color: #f1f1f1; /* 设置链接的背景色 */
+    color: white; /* 设置链接文本的颜色 */
+    background-color: #76b0f8; /* 设置链接的背景色 */
     border-radius: 5px; /* 添加一点圆角边框 */
     transition: background-color 0.3s ease; /* 添加过渡效果 */
+    margin-right: 20px;
+    text-align: center;
   }
 
   .list-ul li:hover {
@@ -116,5 +154,4 @@ function handleAdd() {
     background-color: #0676e4;
     color: white;
   }
-
 </style>
