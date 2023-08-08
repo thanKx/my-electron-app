@@ -38,6 +38,7 @@
         <el-button type="primary" @click="dialogVisible = false">
           Confirm
         </el-button>
+        <el-button type="primary">生成代码</el-button>
       </span>
     </template>
   </el-dialog>

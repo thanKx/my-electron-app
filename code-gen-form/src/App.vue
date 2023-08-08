@@ -2,7 +2,7 @@
 import {ref} from "vue";
 const activeIndex = ref("1")
 
-console.log(this)
+console.log()
 
 
 </script>
