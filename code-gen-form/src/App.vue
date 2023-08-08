@@ -2,10 +2,14 @@
 import {ref} from "vue";
 const activeIndex = ref("1")
 
+console.log(this)
+
+
 </script>
 <template>
 
   <div class="common-layout">
+    {{ $route.path }}
     <el-container>
       <el-header>
         <el-menu
@@ -18,6 +22,9 @@ const activeIndex = ref("1")
           </router-link>
           <router-link class="list-group-item" to="/form">
             <el-menu-item index="2">表单</el-menu-item>
+          </router-link>
+          <router-link class="list-group-item" to="/model">
+            <el-menu-item index="3">模板</el-menu-item>
           </router-link>
         </el-menu>
       </el-header>

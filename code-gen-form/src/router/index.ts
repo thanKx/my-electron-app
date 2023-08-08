@@ -8,6 +8,10 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/form',
         component: () => import('../src/Form.vue')
+    },
+    {
+        path: '/model',
+        component: () => import('../src/Model.vue')
     }
 ]
 
