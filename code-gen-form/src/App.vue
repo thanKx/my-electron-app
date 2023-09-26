@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
 const activeIndex = ref("1")
-
-console.log()
-
-
 </script>
 <template>
 
